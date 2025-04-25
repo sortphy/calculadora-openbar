@@ -1,0 +1,1514 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculadora Completa de Open Bar</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --primary: #8e44ad;
+      --primary-light: #9b59b6;
+      --primary-dark: #7d3c98;
+      --accent: #e74c3c;
+      --text: #333;
+      --light-bg: #f9f9f9;
+      --white: #fff;
+      --border: #ddd;
+      --success: #27ae60;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      color: var(--text);
+      background: var(--light-bg);
+      padding: 20px;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: var(--white);
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      padding: 25px;
+    }
+    
+    h1, h2, h3 {
+      color: var(--primary-dark);
+      margin-bottom: 15px;
+    }
+    
+    h1 {
+      text-align: center;
+      padding-bottom: 15px;
+      border-bottom: 2px solid var(--primary-light);
+      margin-bottom: 25px;
+    }
+    
+    .card {
+      background: var(--white);
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      border: 1px solid var(--border);
+    }
+    
+    .tabs {
+      display: flex;
+      margin-bottom: 20px;
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+    }
+    
+    .tab {
+      padding: 10px 20px;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      font-weight: 600;
+      font-size: 15px;
+      border-bottom: 3px solid transparent;
+      transition: all 0.3s;
+    }
+    
+    .tab.active {
+      border-bottom: 3px solid var(--primary);
+      color: var(--primary);
+    }
+    
+    .tab-content {
+      display: none;
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+    
+    .form-group {
+      margin-bottom: 15px;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    
+    input, select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      font-size: 14px;
+    }
+    
+    button {
+      background: var(--primary);
+      color: var(--white);
+      border: none;
+      padding: 12px 20px;
+      font-size: 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s;
+      font-weight: 600;
+    }
+    
+    button:hover {
+      background: var(--primary-dark);
+    }
+    
+    .btn-block {
+      display: block;
+      width: 100%;
+    }
+    
+    .resultado {
+      background: #f1f9f1;
+      border: 1px solid #c3e6cb;
+      border-radius: 5px;
+      padding: 20px;
+      margin-top: 20px;
+    }
+    
+    .resultado h3 {
+      color: var(--success);
+      margin-bottom: 15px;
+      border-bottom: 1px solid #c3e6cb;
+      padding-bottom: 10px;
+    }
+    
+    .resultado p {
+      margin-bottom: 10px;
+    }
+    
+    .resultado .total {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--success);
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px solid #c3e6cb;
+    }
+    
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 15px;
+    }
+    
+    .bebida-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px dashed var(--border);
+    }
+    
+    .btn-add {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-left: 10px;
+    }
+    
+    .btn-remove {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 2px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+    
+    .btn-edit {
+      background: #3498db;
+      color: white;
+      border: none;
+      padding: 2px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+      margin-right: 5px;
+    }
+    
+    .lista-bebidas {
+      margin-top: 20px;
+    }
+    
+    .print-only {
+      display: none;
+    }
+    
+    @media print {
+      .no-print {
+        display: none;
+      }
+      .print-only {
+        display: block;
+      }
+      .container {
+        box-shadow: none;
+        padding: 0;
+      }
+      body {
+        background: white;
+        padding: 0;
+      }
+    }
+    
+    .alert {
+      padding: 10px;
+      background-color: #f8d7da;
+      color: #721c24;
+      border-radius: 5px;
+      margin-bottom: 15px;
+      display: none;
+    }
+    
+    .progress-container {
+      margin-top: 20px;
+    }
+    
+    .progress-bar {
+      width: 100%;
+      background-color: #e0e0e0;
+      border-radius: 5px;
+      height: 20px;
+      margin-top: 5px;
+    }
+    
+    .progress {
+      height: 100%;
+      background-color: var(--primary);
+      border-radius: 5px;
+      width: 0%;
+      transition: width 0.3s;
+    }
+    
+    .recomendacoes {
+      margin-top: 20px;
+      font-size: 14px;
+    }
+    
+    .recomendacoes p {
+      margin-bottom: 10px;
+    }
+
+    .detalhes-consumo {
+      margin-top: 20px;
+    }
+
+    .detalhes-consumo table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    .detalhes-consumo th, .detalhes-consumo td {
+      padding: 8px;
+      border: 1px solid #ddd;
+      text-align: left;
+    }
+
+    .detalhes-consumo th {
+      background-color: #f2f2f2;
+    }
+
+    .resumo-grafico {
+      margin-top: 20px;
+    }
+
+    .section-title {
+      margin-top: 30px;
+      margin-bottom: 15px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 5px;
+    }
+
+    .estimativa-consumo {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .consumo-card {
+      background: white;
+      border: 1px solid var(--border);
+      padding: 15px;
+      border-radius: 5px;
+    }
+
+    .consumo-card h4 {
+      margin-bottom: 10px;
+      color: var(--primary);
+    }
+
+    .consumo-total {
+      font-weight: bold;
+      font-size: 18px;
+    }
+    
+    .chart-container {
+      position: relative;
+      height: 300px;
+      margin-top: 20px;
+      margin-bottom: 30px;
+    }
+    
+    .tooltip {
+      position: relative;
+      display: inline-block;
+      margin-left: 5px;
+      cursor: pointer;
+    }
+    
+    .tooltip .tooltiptext {
+      visibility: hidden;
+      width: 200px;
+      background-color: #555;
+      color: #fff;
+      text-align: center;
+      border-radius: 6px;
+      padding: 5px;
+      position: absolute;
+      z-index: 1;
+      bottom: 125%;
+      left: 50%;
+      margin-left: -100px;
+      opacity: 0;
+      transition: opacity 0.3s;
+      font-size: 12px;
+      font-weight: normal;
+    }
+    
+    .tooltip:hover .tooltiptext {
+      visibility: visible;
+      opacity: 1;
+    }
+    
+    .badge {
+      display: inline-block;
+      padding: 3px 7px;
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1;
+      color: #fff;
+      text-align: center;
+      white-space: nowrap;
+      vertical-align: baseline;
+      border-radius: 10px;
+      background-color: var(--primary);
+      margin-left: 5px;
+    }
+    
+    .summary-card {
+      background: #f8f9fa;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 15px;
+      border-left: 4px solid var(--primary);
+    }
+    
+    .summary-card h4 {
+      color: var(--primary-dark);
+      margin-bottom: 10px;
+    }
+    
+    .summary-card .value {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+    
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    
+    @media (max-width: 768px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .tabs {
+        flex-direction: column;
+      }
+      
+      .tab {
+        width: 100%;
+        text-align: center;
+      }
+    }
+    
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 20px;
+    }
+    
+    .loading-spinner {
+      border: 4px solid rgba(0, 0, 0, 0.1);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border-left-color: var(--primary);
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🍹 Calculadora Completa de Open Bar</h1>
+    
+    <div class="tabs no-print">
+      <button class="tab active" data-tab="geral">Dados Gerais</button>
+      <button class="tab" data-tab="bebidas">Bebidas</button>
+      <button class="tab" data-tab="equipe">Equipe</button>
+      <button class="tab" data-tab="estrutura">Estrutura</button>
+      <button class="tab" data-tab="resultado">Resultados</button>
+    </div>
+
+    <div id="alert" class="alert">Por favor, preencha todos os campos obrigatórios.</div>
+    <div id="loading" class="loading">
+      <div class="loading-spinner"></div>
+      <p>Calculando resultados...</p>
+    </div>
+    
+    <!-- TAB: DADOS GERAIS -->
+    <div id="tab-geral" class="tab-content active">
+      <div class="card">
+        <h2>Informações do Evento</h2>
+        <div class="grid">
+          <div class="form-group">
+            <label for="nomeEvento">Nome do Evento:</label>
+            <input type="text" id="nomeEvento" placeholder="Ex: Casamento Ana e João">
+          </div>
+          <div class="form-group">
+            <label for="dataEvento">Data do Evento:</label>
+            <input type="date" id="dataEvento">
+          </div>
+          <div class="form-group">
+            <label for="duracao">Duração (horas):</label>
+            <input type="number" id="duracao" value="5" min="1" max="24">
+          </div>
+        </div>
+        
+        <h3 class="section-title">Convidados</h3>
+        <div class="grid">
+          <div class="form-group">
+            <label for="convidadosTotal">Número total de convidados:</label>
+            <input type="number" id="convidadosTotal" value="100" min="1">
+          </div>
+          <div class="form-group">
+            <label for="convidadosAdultos">Adultos que bebem:</label>
+            <input type="number" id="convidadosAdultos" value="80" min="0">
+          </div>
+          <div class="form-group">
+            <label for="convidadosAbstemios">Adultos que não bebem:</label>
+            <input type="number" id="convidadosAbstemios" value="10" min="0">
+          </div>
+          <div class="form-group">
+            <label for="convidadosMenores">Menores de idade:</label>
+            <input type="number" id="convidadosMenores" value="10" min="0">
+          </div>
+        </div>
+        
+        <h3 class="section-title">Perfil de Consumo</h3>
+        <div class="grid">
+          <div class="form-group">
+            <label for="perfilConsumo">Perfil médio de consumo:</label>
+            <select id="perfilConsumo">
+              <option value="baixo">Baixo (2-3 drinks por pessoa)</option>
+              <option value="medio" selected>Médio (4-5 drinks por pessoa)</option>
+              <option value="alto">Alto (6-7 drinks por pessoa)</option>
+              <option value="personalizado">Personalizado</option>
+            </select>
+          </div>
+          <div class="form-group" id="consumoPersonalizadoGroup" style="display: none;">
+            <label for="consumoPersonalizado">Drinks por pessoa (média):</label>
+            <input type="number" id="consumoPersonalizado" value="5" min="1" step="0.5">
+          </div>
+        </div>
+        
+        <button class="btn-block" onclick="proximaTab('bebidas')">Próximo: Bebidas</button>
+      </div>
+    </div>
+    
+    <!-- TAB: BEBIDAS -->
+    <div id="tab-bebidas" class="tab-content">
+      <div class="card">
+        <h2>Bebidas</h2>
+        
+        <div class="form-group">
+          <label for="tipoBebida">Adicionar bebida:</label>
+          <div style="display: flex; gap: 10px;">
+            <select id="tipoBebida" style="flex: 1;">
+              <option value="">-- Selecione uma bebida --</option>
+              <option value="cerveja">Cerveja</option>
+              <option value="vinho">Vinho</option>
+              <option value="espumante">Espumante</option>
+              <option value="whisky">Whisky</option>
+              <option value="vodka">Vodka</option>
+              <option value="gin">Gin</option>
+              <option value="tequila">Tequila</option>
+              <option value="rum">Rum</option>
+              <option value="cachaca">Cachaça</option>
+              <option value="agua">Água</option>
+              <option value="refrigerante">Refrigerante</option>
+              <option value="suco">Suco</option>
+              <option value="energetico">Energético</option>
+              <option value="outro">Outro</option>
+            </select>
+            <button class="btn-add" onclick="mostrarFormBebida()">+</button>
+          </div>
+        </div>
+        
+        <div id="formBebida" style="display: none; margin-top: 15px; padding: 15px; border: 1px solid #ddd; border-radius: 5px;">
+          <h3 id="formBebidaTitulo">Adicionar Bebida</h3>
+          <div class="grid">
+            <div class="form-group">
+              <label for="nomeBebida">Nome:</label>
+              <input type="text" id="nomeBebida" placeholder="Ex: Cerveja Pilsen">
+            </div>
+            <div class="form-group">
+              <label for="categoriaBebida">Categoria:</label>
+              <input type="text" id="categoriaBebida" placeholder="Ex: Cerveja">
+            </div>
+            <div class="form-group">
+              <label for="marcaBebida">Marca (opcional):</label>
+              <input type="text" id="marcaBebida" placeholder="Ex: Heineken">
+            </div>
+            <div class="form-group">
+              <label for="volumeBebida">Volume (ml):</label>
+              <input type="number" id="volumeBebida" placeholder="355" min="1">
+            </div>
+            <div class="form-group">
+              <label for="precoBebida">Preço por unidade (R$):</label>
+              <input type="number" id="precoBebida" placeholder="6.50" min="0.01" step="0.01">
+            </div>
+            <div class="form-group">
+              <label for="consumoMedio">Consumo médio (unidades/pessoa):</label>
+              <input type="number" id="consumoMedio" placeholder="3" min="0.1" step="0.1">
+            </div>
+          </div>
+          <div style="display: flex; gap: 10px; margin-top: 15px;">
+            <button onclick="adicionarBebida()">Adicionar Bebida</button>
+            <button onclick="cancelarBebida()" style="background: #6c757d;">Cancelar</button>
+          </div>
+        </div>
+        
+        <div class="lista-bebidas">
+          <h3>Bebidas Adicionadas</h3>
+          <div id="listaBebidas">
+            <p>Nenhuma bebida adicionada ainda.</p>
+          </div>
+        </div>
+        
+        <div style="display: flex; gap: 10px; margin-top: 20px;">
+          <button onclick="voltarTab('geral')" style="background: #6c757d;">Voltar</button>
+          <button class="btn-block" onclick="proximaTab('equipe')">Próximo: Equipe</button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- TAB: EQUIPE -->
+    <div id="tab-equipe" class="tab-content">
+      <div class="card">
+        <h2>Equipe</h2>
+        
+        <div class="grid">
+          <div class="form-group">
+            <label for="qtdBarmans">Quantidade de barmans:</label>
+            <input type="number" id="qtdBarmans" value="2" min="0">
+          </div>
+          <div class="form-group">
+            <label for="custoBarman">Custo por barman (R$):</label>
+            <input type="number" id="custoBarman" value="300" min="0" step="0.01">
+          </div>
+          <div class="form-group">
+            <label for="qtdAuxiliares">Quantidade de auxiliares:</label>
+            <input type="number" id="qtdAuxiliares" value="1" min="0">
+          </div>
+          <div class="form-group">
+            <label for="custoAuxiliar">Custo por auxiliar (R$):</label>
+            <input type="number" id="custoAuxiliar" value="200" min="0" step="0.01">
+          </div>
+        </div>
+        
+        <div class="recomendacoes">
+          <h3>Recomendações:</h3>
+          <p>• Para eventos de até 50 pessoas: 1 barman</p>
+          <p>• De 50 a 100 pessoas: 2 barmans</p>
+          <p>• De 100 a 200 pessoas: 3 barmans + 1 auxiliar</p>
+          <p>• Acima de 200 pessoas: 4 barmans + 2 auxiliares</p>
+        </div>
+        
+        <div style="display: flex; gap: 10px; margin-top: 20px;">
+          <button onclick="voltarTab('bebidas')" style="background: #6c757d;">Voltar</button>
+          <button class="btn-block" onclick="proximaTab('estrutura')">Próximo: Estrutura</button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- TAB: ESTRUTURA -->
+    <div id="tab-estrutura" class="tab-content">
+      <div class="card">
+        <h2>Estrutura</h2>
+        
+        <h3 class="section-title">Custos Fixos</h3>
+        <div class="grid">
+          <div class="form-group">
+            <label for="custoTransporte">Transporte (R$):</label>
+            <input type="number" id="custoTransporte" value="150" min="0" step="0.01">
+          </div>
+          <div class="form-group">
+            <label for="custoGelo">Gelo (R$):</label>
+            <input type="number" id="custoGelo" value="100" min="0" step="0.01">
+          </div>
+          <div class="form-group">
+            <label for="custoCopos">Copos e Descartáveis (R$):</label>
+            <input type="number" id="custoCopos" value="200" min="0" step="0.01">
+          </div>
+          <div class="form-group">
+            <label for="custoDecoracao">Decoração do Bar (R$):</label>
+            <input type="number" id="custoDecoracao" value="150" min="0" step="0.01">
+          </div>
+        </div>
+        
+        <h3 class="section-title">Equipamentos</h3>
+        <div class="grid">
+          <div class="form-group">
+            <label for="custoBalcao">Balcão/Bar (R$):</label>
+            <input type="number" id="custoBalcao" value="300" min="0" step="0.01">
+          </div>
+          <div class="form-group">
+            <label for="custoCooler">Coolers/Refrigeração (R$):</label>
+            <input type="number" id="custoCooler" value="150" min="0" step="0.01">
+          </div>
+          <div class="form-group">
+            <label for="custoUtensilio">Utensílios de Bar (R$):</label>
+            <input type="number" id="custoUtensilio" value="100" min="0" step="0.01">
+          </div>
+          <div class="form-group">
+            <label for="custoExtra">Custos Extras (R$):</label>
+            <input type="number" id="custoExtra" value="0" min="0" step="0.01">
+          </div>
+        </div>
+        
+        <div style="display: flex; gap: 10px; margin-top: 20px;">
+          <button onclick="voltarTab('equipe')" style="background: #6c757d;">Voltar</button>
+          <button class="btn-block" onclick="calcularResultado()">Finalizar e Ver Resultados</button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- TAB: RESULTADO -->
+    <div id="tab-resultado" class="tab-content">
+      <div class="card">
+        <h2>Resultados</h2>
+        
+        <div id="resultado" class="resultado">
+          <h3>Preencha todos os dados para ver os resultados</h3>
+        </div>
+        
+        <div class="no-print" style="margin-top: 20px;">
+          <button onclick="imprimirOrcamento()" style="background: #28a745;">
+            <i class="fas fa-print"></i> Imprimir Orçamento
+          </button>
+          <button onclick="voltarTab('estrutura')" style="background: #6c757d; margin-left: 10px;">
+            <i class="fas fa-arrow-left"></i> Voltar
+          </button>
+          <button onclick="limparFormulario()" style="background: #dc3545; margin-left: 10px;">
+            <i class="fas fa-trash"></i> Limpar Tudo
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Estado global da aplicação
+    const estado = {
+      bebidas: [],
+      bebidaEditando: null
+    };
+
+    // Inicialização
+    document.addEventListener('DOMContentLoaded', function() {
+      // Configurar data atual
+      document.getElementById('dataEvento').valueAsDate = new Date();
+      
+      // Configurar evento para perfil de consumo personalizado
+      document.getElementById('perfilConsumo').addEventListener('change', function() {
+        const consumoPersonalizadoGroup = document.getElementById('consumoPersonalizadoGroup');
+        if (this.value === 'personalizado') {
+          consumoPersonalizadoGroup.style.display = 'block';
+        } else {
+          consumoPersonalizadoGroup.style.display = 'none';
+        }
+      });
+      
+      // Configurar validação de convidados
+      document.getElementById('convidadosTotal').addEventListener('change', validarTotalConvidados);
+      document.getElementById('convidadosAdultos').addEventListener('change', validarTotalConvidados);
+      document.getElementById('convidadosAbstemios').addEventListener('change', validarTotalConvidados);
+      document.getElementById('convidadosMenores').addEventListener('change', validarTotalConvidados);
+      
+      // Preencher bebidas comuns com valores padrão
+      configurarBebidasPadrao();
+      
+      // Configurar recomendações automáticas de equipe
+      document.getElementById('convidadosTotal').addEventListener('change', atualizarRecomendacoesEquipe);
+    });
+
+    // Funções de navegação entre tabs
+    function mostrarTab(tabId) {
+      // Esconder todas as tabs
+      document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      
+      // Remover classe active de todos os botões de tab
+      document.querySelectorAll('.tab').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      
+      // Mostrar a tab selecionada
+      document.getElementById('tab-' + tabId).classList.add('active');
+      
+      // Ativar o botão da tab
+      document.querySelector(`.tab[data-tab="${tabId}"]`).classList.add('active');
+    }
+
+    function proximaTab(tabId) {
+      mostrarTab(tabId);
+    }
+
+    function voltarTab(tabId) {
+      mostrarTab(tabId);
+    }
+
+    // Funções para gerenciar bebidas
+    function configurarBebidasPadrao() {
+      const bebidasPadrao = {
+        'cerveja': { nome: 'Cerveja Pilsen', categoria: 'Cerveja', marca: 'Padrão', volume: 355, preco: 5.50, consumo: 4 },
+        'vinho': { nome: 'Vinho Tinto', categoria: 'Vinho', marca: 'Nacional', volume: 750, preco: 35.00, consumo: 0.5 },
+        'espumante': { nome: 'Espumante Brut', categoria: 'Espumante', marca: 'Nacional', volume: 750, preco: 40.00, consumo: 0.3 },
+        'whisky': { nome: 'Whisky', categoria: 'Destilado', marca: 'Nacional', volume: 1000, preco: 75.00, consumo: 0.2 },
+        'vodka': { nome: 'Vodka', categoria: 'Destilado', marca: 'Nacional', volume: 1000, preco: 60.00, consumo: 0.2 },
+        'gin': { nome: 'Gin', categoria: 'Destilado', marca: 'Nacional', volume: 750, preco: 70.00, consumo: 0.2 },
+        'cachaca': { nome: 'Cachaça', categoria: 'Destilado', marca: 'Artesanal', volume: 1000, preco: 45.00, consumo: 0.2 },
+        'agua': { nome: 'Água Mineral', categoria: 'Não Alcoólico', marca: '', volume: 500, preco: 2.00, consumo: 2 },
+        'refrigerante': { nome: 'Refrigerante', categoria: 'Não Alcoólico', marca: 'Diversos', volume: 2000, preco: 8.00, consumo: 0.5 },
+        'suco': { nome: 'Suco Natural', categoria: 'Não Alcoólico', marca: '', volume: 1000, preco: 10.00, consumo: 0.5 },
+        'energetico': { nome: 'Energético', categoria: 'Não Alcoólico', marca: '', volume: 250, preco: 8.00, consumo: 1 }
+      };
+      
+      // Configurar o evento de seleção de bebida
+      document.getElementById('tipoBebida').addEventListener('change', function() {
+        const bebidaSelecionada = this.value;
+        if (bebidaSelecionada && bebidasPadrao[bebidaSelecionada]) {
+          const bebida = bebidasPadrao[bebidaSelecionada];
+          
+          document.getElementById('nomeBebida').value = bebida.nome;
+          document.getElementById('categoriaBebida').value = bebida.categoria;
+          document.getElementById('marcaBebida').value = bebida.marca;
+          document.getElementById('volumeBebida').value = bebida.volume;
+          document.getElementById('precoBebida').value = bebida.preco;
+          document.getElementById('consumoMedio').value = bebida.consumo;
+          
+          mostrarFormBebida();
+        } else if (bebidaSelecionada === 'outro') {
+          limparFormBebida();
+          mostrarFormBebida();
+        }
+      });
+    }
+
+    function mostrarFormBebida() {
+      document.getElementById('formBebida').style.display = 'block';
+      document.getElementById('formBebidaTitulo').textContent = estado.bebidaEditando !== null ? 'Editar Bebida' : 'Adicionar Bebida';
+    }
+
+    function limparFormBebida() {
+      document.getElementById('nomeBebida').value = '';
+      document.getElementById('categoriaBebida').value = '';
+      document.getElementById('marcaBebida').value = '';
+      document.getElementById('volumeBebida').value = '';
+      document.getElementById('precoBebida').value = '';
+      document.getElementById('consumoMedio').value = '';
+    }
+
+    function cancelarBebida() {
+      document.getElementById('formBebida').style.display = 'none';
+      document.getElementById('tipoBebida').value = '';
+      estado.bebidaEditando = null;
+      limparFormBebida();
+    }
+
+    function adicionarBebida() {
+      const nome = document.getElementById('nomeBebida').value;
+      const categoria = document.getElementById('categoriaBebida').value;
+      const marca = document.getElementById('marcaBebida').value;
+      const volume = parseFloat(document.getElementById('volumeBebida').value);
+      const preco = parseFloat(document.getElementById('precoBebida').value);
+      const consumo = parseFloat(document.getElementById('consumoMedio').value);
+      
+      if (!nome || !categoria || isNaN(volume) || isNaN(preco) || isNaN(consumo)) {
+        alert('Por favor, preencha todos os campos obrigatórios da bebida.');
+        return;
+      }
+      
+      const bebida = {
+        id: estado.bebidaEditando !== null ? estado.bebidas[estado.bebidaEditando].id : Date.now(),
+        nome,
+        categoria,
+        marca,
+        volume,
+        preco,
+        consumo
+      };
+      
+      if (estado.bebidaEditando !== null) {
+        // Editando bebida existente
+        estado.bebidas[estado.bebidaEditando] = bebida;
+        estado.bebidaEditando = null;
+      } else {
+        // Adicionando nova bebida
+        estado.bebidas.push(bebida);
+      }
+      
+      atualizarListaBebidas();
+      document.getElementById('formBebida').style.display = 'none';
+      document.getElementById('tipoBebida').value = '';
+      limparFormBebida();
+    }
+    
+    function editarBebida(index) {
+      estado.bebidaEditando = index;
+      const bebida = estado.bebidas[index];
+      
+      document.getElementById('nomeBebida').value = bebida.nome;
+      document.getElementById('categoriaBebida').value = bebida.categoria;
+      document.getElementById('marcaBebida').value = bebida.marca || '';
+      document.getElementById('volumeBebida').value = bebida.volume;
+      document.getElementById('precoBebida').value = bebida.preco;
+      document.getElementById('consumoMedio').value = bebida.consumo;
+      
+      mostrarFormBebida();
+    }
+    
+    function removerBebida(index) {
+      if (confirm('Tem certeza que deseja remover esta bebida?')) {
+        estado.bebidas.splice(index, 1);
+        atualizarListaBebidas();
+      }
+    }
+    
+    function atualizarListaBebidas() {
+      const listaBebidas = document.getElementById('listaBebidas');
+      
+      if (estado.bebidas.length === 0) {
+        listaBebidas.innerHTML = '<p>Nenhuma bebida adicionada ainda.</p>';
+        return;
+      }
+      
+      let html = '';
+      
+      estado.bebidas.forEach((bebida, index) => {
+        html += `
+          <div class="bebida-item">
+            <div>
+              <strong>${bebida.nome}</strong> 
+              ${bebida.marca ? `(${bebida.marca})` : ''} - 
+              ${bebida.volume}ml - 
+              R$ ${bebida.preco.toFixed(2)} - 
+              ${bebida.consumo} por pessoa
+            </div>
+            <div>
+              <button class="btn-edit" onclick="editarBebida(${index})">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="btn-remove" onclick="removerBebida(${index})">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          </div>
+        `;
+      });
+      
+      listaBebidas.innerHTML = html;
+    }
+    
+    // Função para validar o total de convidados
+    function validarTotalConvidados() {
+      const total = parseInt(document.getElementById('convidadosTotal').value) || 0;
+      const adultos = parseInt(document.getElementById('convidadosAdultos').value) || 0;
+      const abstemios = parseInt(document.getElementById('convidadosAbstemios').value) || 0;
+      const menores = parseInt(document.getElementById('convidadosMenores').value) || 0;
+      
+      const soma = adultos + abstemios + menores;
+      
+      if (soma > total) {
+        document.getElementById('alert').style.display = 'block';
+        document.getElementById('alert').textContent = 'A soma dos tipos de convidados não pode ser maior que o total.';
+        return false;
+      } else if (soma < total) {
+        document.getElementById('alert').style.display = 'block';
+        document.getElementById('alert').textContent = 'A soma dos tipos de convidados deve ser igual ao total.';
+        return false;
+      } else {
+        document.getElementById('alert').style.display = 'none';
+        return true;
+      }
+    }
+    
+    // Função para atualizar recomendações de equipe com base no número de convidados
+    function atualizarRecomendacoesEquipe() {
+      const totalConvidados = parseInt(document.getElementById('convidadosTotal').value) || 0;
+      let qtdBarmans = 1;
+      let qtdAuxiliares = 0;
+      
+      if (totalConvidados <= 50) {
+        qtdBarmans = 1;
+        qtdAuxiliares = 0;
+      } else if (totalConvidados <= 100) {
+        qtdBarmans = 2;
+        qtdAuxiliares = 0;
+      } else if (totalConvidados <= 200) {
+        qtdBarmans = 3;
+        qtdAuxiliares = 1;
+      } else {
+        qtdBarmans = 4;
+        qtdAuxiliares = 2;
+      }
+      
+      document.getElementById('qtdBarmans').value = qtdBarmans;
+      document.getElementById('qtdAuxiliares').value = qtdAuxiliares;
+    }
+    
+    // Função para calcular o resultado
+    function calcularResultado() {
+      // Mostrar loading
+      document.getElementById('loading').style.display = 'block';
+      
+      // Simular processamento (para melhor experiência do usuário)
+      setTimeout(() => {
+        // Validar dados
+        if (!validarTotalConvidados()) {
+          document.getElementById('loading').style.display = 'none';
+          return;
+        }
+        
+        if (estado.bebidas.length === 0) {
+          alert('Por favor, adicione pelo menos uma bebida.');
+          document.getElementById('loading').style.display = 'none';
+          voltarTab('bebidas');
+          return;
+        }
+        
+        // Coletar dados do formulário
+        const nomeEvento = document.getElementById('nomeEvento').value || 'Evento';
+        const dataEvento = document.getElementById('dataEvento').value;
+        const duracao = parseInt(document.getElementById('duracao').value) || 5;
+        
+        const convidadosTotal = parseInt(document.getElementById('convidadosTotal').value) || 0;
+        const convidadosAdultos = parseInt(document.getElementById('convidadosAdultos').value) || 0;
+        const convidadosAbstemios = parseInt(document.getElementById('convidadosAbstemios').value) || 0;
+        const convidadosMenores = parseInt(document.getElementById('convidadosMenores').value) || 0;
+        
+        const perfilConsumo = document.getElementById('perfilConsumo').value;
+        let consumoMedio;
+        
+        if (perfilConsumo === 'baixo') {
+          consumoMedio = 2.5;
+        } else if (perfilConsumo === 'medio') {
+          consumoMedio = 4.5;
+        } else if (perfilConsumo === 'alto') {
+          consumoMedio = 6.5;
+        } else {
+          consumoMedio = parseFloat(document.getElementById('consumoPersonalizado').value) || 5;
+        }
+        
+        const qtdBarmans = parseInt(document.getElementById('qtdBarmans').value) || 0;
+        const custoBarman = parseFloat(document.getElementById('custoBarman').value) || 0;
+        const qtdAuxiliares = parseInt(document.getElementById('qtdAuxiliares').value) || 0;
+        const custoAuxiliar = parseFloat(document.getElementById('custoAuxiliar').value) || 0;
+        
+        const custoTransporte = parseFloat(document.getElementById('custoTransporte').value) || 0;
+        const custoGelo = parseFloat(document.getElementById('custoGelo').value) || 0;
+        const custoCopos = parseFloat(document.getElementById('custoCopos').value) || 0;
+        const custoDecoracao = parseFloat(document.getElementById('custoDecoracao').value) || 0;
+        
+        const custoBalcao = parseFloat(document.getElementById('custoBalcao').value) || 0;
+        const custoCooler = parseFloat(document.getElementById('custoCooler').value) || 0;
+        const custoUtensilio = parseFloat(document.getElementById('custoUtensilio').value) || 0;
+        const custoExtra = parseFloat(document.getElementById('custoExtra').value) || 0;
+        
+        // Calcular custos de bebidas
+        const bebidasCalculadas = estado.bebidas.map(bebida => {
+          const quantidade = Math.ceil(convidadosAdultos * bebida.consumo);
+          const custoTotal = quantidade * bebida.preco;
+          
+          return {
+            ...bebida,
+            quantidade,
+            custoTotal
+          };
+        });
+        
+        // Calcular custos não alcoólicos para abstemios e menores
+        const consumoNaoAlcoolico = 3; // média de consumo para não alcoólicos
+        const bebidasNaoAlcoolicas = estado.bebidas.filter(b => 
+          b.categoria.toLowerCase().includes('não alcoólico') || 
+          b.categoria.toLowerCase().includes('nao alcoolico') ||
+          b.categoria.toLowerCase().includes('agua') ||
+          b.categoria.toLowerCase().includes('suco') ||
+          b.categoria.toLowerCase().includes('refrigerante')
+        );
+        
+        // Se não houver bebidas não alcoólicas, adicionar água como padrão
+        if (bebidasNaoAlcoolicas.length === 0) {
+          bebidasCalculadas.push({
+            id: Date.now(),
+            nome: 'Água Mineral (Adicionada automaticamente)',
+            categoria: 'Não Alcoólico',
+            marca: '',
+            volume: 500,
+            preco: 2.00,
+            consumo: 0,
+            quantidade: Math.ceil((convidadosAbstemios + convidadosMenores) * consumoNaoAlcoolico),
+            custoTotal: Math.ceil((convidadosAbstemios + convidadosMenores) * consumoNaoAlcoolico) * 2.00
+          });
+        } else {
+          // Distribuir o consumo entre as bebidas não alcoólicas existentes
+          bebidasNaoAlcoolicas.forEach(bebida => {
+            const index = bebidasCalculadas.findIndex(b => b.id === bebida.id);
+            if (index !== -1) {
+              const quantidadeExtra = Math.ceil((convidadosAbstemios + convidadosMenores) * (consumoNaoAlcoolico / bebidasNaoAlcoolicas.length));
+              bebidasCalculadas[index].quantidade += quantidadeExtra;
+              bebidasCalculadas[index].custoTotal += quantidadeExtra * bebida.preco;
+            }
+          });
+        }
+        
+        // Calcular custos totais
+        const custoBebidas = bebidasCalculadas.reduce((total, bebida) => total + bebida.custoTotal, 0);
+        const custoEquipe = (qtdBarmans * custoBarman) + (qtdAuxiliares * custoAuxiliar);
+        const custoFixo = custoTransporte + custoGelo + custoCopos + custoDecoracao;
+        const custoEquipamentos = custoBalcao + custoCooler + custoUtensilio + custoExtra;
+        
+        const custoTotal = custoBebidas + custoEquipe + custoFixo + custoEquipamentos;
+        const custoPorPessoa = custoTotal / convidadosTotal;
+        
+        // Preparar dados para gráficos
+        const dadosGraficoCustos = {
+          labels: ['Bebidas', 'Equipe', 'Custos Fixos', 'Equipamentos'],
+          datasets: [{
+            label: 'Custos (R$)',
+            data: [custoBebidas, custoEquipe, custoFixo, custoEquipamentos],
+            backgroundColor: [
+              'rgba(54, 162, 235, 0.7)',
+              'rgba(255, 99, 132, 0.7)',
+              'rgba(255, 206, 86, 0.7)',
+              'rgba(75, 192, 192, 0.7)'
+            ],
+            borderColor: [
+              'rgba(54, 162, 235, 1)',
+              'rgba(255, 99, 132, 1)',
+              'rgba(255, 206, 86, 1)',
+              'rgba(75, 192, 192, 1)'
+            ],
+            borderWidth: 1
+          }]
+        };
+        
+        // Agrupar bebidas por categoria para o gráfico
+        const categoriasBebidas = {};
+        bebidasCalculadas.forEach(bebida => {
+          if (!categoriasBebidas[bebida.categoria]) {
+            categoriasBebidas[bebida.categoria] = 0;
+          }
+          categoriasBebidas[bebida.categoria] += bebida.custoTotal;
+        });
+        
+        const dadosGraficoBebidas = {
+          labels: Object.keys(categoriasBebidas),
+          datasets: [{
+            label: 'Custo por Categoria (R$)',
+            data: Object.values(categoriasBebidas),
+            backgroundColor: [
+              'rgba(255, 99, 132, 0.7)',
+              'rgba(54, 162, 235, 0.7)',
+              'rgba(255, 206, 86, 0.7)',
+              'rgba(75, 192, 192, 0.7)',
+              'rgba(153, 102, 255, 0.7)',
+              'rgba(255, 159, 64, 0.7)',
+              'rgba(199, 199, 199, 0.7)',
+              'rgba(83, 102, 255, 0.7)',
+              'rgba(40, 159, 64, 0.7)',
+              'rgba(210, 199, 199, 0.7)'
+            ],
+            borderColor: [
+              'rgba(255, 99, 132, 1)',
+              'rgba(54, 162, 235, 1)',
+              'rgba(255, 206, 86, 1)',
+              'rgba(75, 192, 192, 1)',
+              'rgba(153, 102, 255, 1)',
+              'rgba(255, 159, 64, 1)',
+              'rgba(199, 199, 199, 1)',
+              'rgba(83, 102, 255, 1)',
+              'rgba(40, 159, 64, 1)',
+              'rgba(210, 199, 199, 1)'
+            ],
+            borderWidth: 1
+          }]
+        };
+        
+        // Gerar HTML do resultado
+        const dataFormatada = dataEvento ? new Date(dataEvento).toLocaleDateString('pt-BR') : 'Data não definida';
+        
+        let resultadoHTML = `
+          <h3>Orçamento para ${nomeEvento}</h3>
+          
+          <div class="print-only">
+            <p><strong>Data:</strong> ${dataFormatada}</p>
+            <p><strong>Duração:</strong> ${duracao} horas</p>
+            <p><strong>Total de convidados:</strong> ${convidadosTotal} pessoas</p>
+          </div>
+          
+          <div class="summary-grid">
+            <div class="summary-card">
+              <h4>Custo Total</h4>
+              <div class="value">R$ ${custoTotal.toFixed(2)}</div>
+            </div>
+            <div class="summary-card">
+              <h4>Custo por Pessoa</h4>
+              <div class="value">R$ ${custoPorPessoa.toFixed(2)}</div>
+            </div>
+            <div class="summary-card">
+              <h4>Duração do Evento</h4>
+              <div class="value">${duracao} horas</div>
+            </div>
+            <div class="summary-card">
+              <h4>Total de Convidados</h4>
+              <div class="value">${convidadosTotal} pessoas</div>
+            </div>
+          </div>
+          
+          <div class="resumo-grafico">
+            <h3 class="section-title">Distribuição de Custos</h3>
+            <div class="chart-container">
+              <canvas id="grafico-custos"></canvas>
+            </div>
+          </div>
+          
+          <div class="resumo-grafico">
+            <h3 class="section-title">Custos por Categoria de Bebida</h3>
+            <div class="chart-container">
+              <canvas id="grafico-bebidas"></canvas>
+            </div>
+          </div>
+          
+          <h3 class="section-title">Detalhamento de Custos</h3>
+          
+          <h4>1. Bebidas <span class="badge">R$ ${custoBebidas.toFixed(2)}</span></h4>
+          <div class="detalhes-consumo">
+            <table>
+              <thead>
+                <tr>
+                  <th>Bebida</th>
+                  <th>Volume</th>
+                  <th>Preço Unit.</th>
+                  <th>Quantidade</th>
+                  <th>Custo Total</th>
+                </tr>
+              </thead>
+              <tbody>
+        `;
+        
+        bebidasCalculadas.forEach(bebida => {
+          resultadoHTML += `
+            <tr>
+              <td>${bebida.nome} ${bebida.marca ? `(${bebida.marca})` : ''}</td>
+              <td>${bebida.volume} ml</td>
+              <td>R$ ${bebida.preco.toFixed(2)}</td>
+              <td>${bebida.quantidade} unid.</td>
+              <td>R$ ${bebida.custoTotal.toFixed(2)}</td>
+            </tr>
+          `;
+        });
+        
+        resultadoHTML += `
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td colspan="4"><strong>Total Bebidas</strong></td>
+                  <td><strong>R$ ${custoBebidas.toFixed(2)}</strong></td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+          
+          <h4>2. Equipe <span class="badge">R$ ${custoEquipe.toFixed(2)}</span></h4>
+          <div class="detalhes-consumo">
+            <table>
+              <thead>
+                <tr>
+                  <th>Função</th>
+                  <th>Quantidade</th>
+                  <th>Custo Unit.</th>
+                  <th>Custo Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Barman</td>
+                  <td>${qtdBarmans}</td>
+                  <td>R$ ${custoBarman.toFixed(2)}</td>
+                  <td>R$ ${(qtdBarmans * custoBarman).toFixed(2)}</td>
+                </tr>
+                <tr>
+                  <td>Auxiliar</td>
+                  <td>${qtdAuxiliares}</td>
+                  <td>R$ ${custoAuxiliar.toFixed(2)}</td>
+                  <td>R$ ${(qtdAuxiliares * custoAuxiliar).toFixed(2)}</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td colspan="3"><strong>Total Equipe</strong></td>
+                  <td><strong>R$ ${custoEquipe.toFixed(2)}</strong></td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+          
+          <h4>3. Custos Fixos <span class="badge">R$ ${custoFixo.toFixed(2)}</span></h4>
+          <div class="detalhes-consumo">
+            <table>
+              <thead>
+                <tr>
+                  <th>Item</th>
+                  <th>Custo</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Transporte</td>
+                  <td>R$ ${custoTransporte.toFixed(2)}</td>
+                </tr>
+                <tr>
+                  <td>Gelo</td>
+                  <td>R$ ${custoGelo.toFixed(2)}</td>
+                </tr>
+                <tr>
+                  <td>Copos e Descartáveis</td>
+                  <td>R$ ${custoCopos.toFixed(2)}</td>
+                </tr>
+                <tr>
+                  <td>Decoração do Bar</td>
+                  <td>R$ ${custoDecoracao.toFixed(2)}</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td><strong>Total Custos Fixos</strong></td>
+                  <td><strong>R$ ${custoFixo.toFixed(2)}</strong></td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+          
+          <h4>4. Equipamentos <span class="badge">R$ ${custoEquipamentos.toFixed(2)}</span></h4>
+          <div class="detalhes-consumo">
+            <table>
+              <thead>
+                <tr>
+                  <th>Item</th>
+                  <th>Custo</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Balcão/Bar</td>
+                  <td>R$ ${custoBalcao.toFixed(2)}</td>
+                </tr>
+                <tr>
+                  <td>Coolers/Refrigeração</td>
+                  <td>R$ ${custoCooler.toFixed(2)}</td>
+                </tr>
+                <tr>
+                  <td>Utensílios de Bar</td>
+                  <td>R$ ${custoUtensilio.toFixed(2)}</td>
+                </tr>
+                <tr>
+                  <td>Custos Extras</td>
+                  <td>R$ ${custoExtra.toFixed(2)}</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td><strong>Total Equipamentos</strong></td>
+                  <td><strong>R$ ${custoEquipamentos.toFixed(2)}</strong></td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+          
+          <div class="total">
+            <p>Custo Total do Open Bar: R$ ${custoTotal.toFixed(2)}</p>
+            <p>Custo por Convidado: R$ ${custoPorPessoa.toFixed(2)}</p>
+          </div>
+          
+          <div class="estimativa-consumo">
+            <h3 class="section-title">Estimativa de Consumo</h3>
+            <p>Baseado no perfil de consumo ${perfilConsumo === 'personalizado' ? 'personalizado' : perfilConsumo} (${consumoMedio} drinks por pessoa em média)</p>
+            
+            <div class="progress-container">
+              <label>Proporção de consumo por tipo de convidado:</label>
+              <div class="progress-bar">
+                <div class="progress" style="width: ${(convidadosAdultos / convidadosTotal * 100).toFixed(0)}%; background-color: var(--primary);"></div>
+              </div>
+              <p>${convidadosAdultos} adultos que bebem (${(convidadosAdultos / convidadosTotal * 100).toFixed(0)}%)</p>
+              
+              <div class="progress-bar">
+                <div class="progress" style="width: ${(convidadosAbstemios / convidadosTotal * 100).toFixed(0)}%; background-color: #3498db;"></div>
+              </div>
+              <p>${convidadosAbstemios} adultos que não bebem (${(convidadosAbstemios / convidadosTotal * 100).toFixed(0)}%)</p>
+              
+              <div class="progress-bar">
+                <div class="progress" style="width: ${(convidadosMenores / convidadosTotal * 100).toFixed(0)}%; background-color: #2ecc71;"></div>
+              </div>
+              <p>${convidadosMenores} menores de idade (${(convidadosMenores / convidadosTotal * 100).toFixed(0)}%)</p>
+            </div>
+          </div>
+          
+          <div class="recomendacoes">
+            <h3 class="section-title">Recomendações Adicionais</h3>
+            <p>• Considere ter uma reserva de 10-15% a mais de bebidas para evitar falta.</p>
+            <p>• Para eventos com mais de ${duracao} horas, considere aumentar a quantidade de bebidas.</p>
+            <p>• Lembre-se de providenciar água e bebidas não alcoólicas suficientes.</p>
+            <p>• Calcule aproximadamente 1kg de gelo para cada 3-4 convidados.</p>
+            <p>• Tenha copos extras, aproximadamente 3-4 por convidado.</p>
+          </div>
+        `;
+        
+        // Atualizar o HTML do resultado
+        document.getElementById('resultado').innerHTML = resultadoHTML;
+        
+        // Criar gráficos
+        setTimeout(() => {
+          // Gráfico de distribuição de custos
+          const ctxCustos = document.getElementById('grafico-custos').getContext('2d');
+          new Chart(ctxCustos, {
+            type: 'pie',
+            data: dadosGraficoCustos,
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: {
+                  position: 'right',
+                },
+                tooltip: {
+                  callbacks: {
+                    label: function(context) {
+                      const label = context.label || '';
+                      const value = context.raw || 0;
+                      const percentage = (value / custoTotal * 100).toFixed(1);
+                      return `${label}: R$ ${value.toFixed(2)} (${percentage}%)`;
+                    }
+                  }
+                }
+              }
+            }
+          });
+          
+          // Gráfico de bebidas por categoria
+          const ctxBebidas = document.getElementById('grafico-bebidas').getContext('2d');
+          new Chart(ctxBebidas, {
+            type: 'bar',
+            data: dadosGraficoBebidas,
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: {
+                  display: false
+                },
+                tooltip: {
+                  callbacks: {
+                    label: function(context) {
+                      const label = context.label || '';
+                      const value = context.raw || 0;
+                      const percentage = (value / custoBebidas * 100).toFixed(1);
+                      return `${label}: R$ ${value.toFixed(2)} (${percentage}%)`;
+                    }
+                  }
+                }
+              },
+              scales: {
+                y: {
+                  beginAtZero: true,
+                  ticks: {
+                    callback: function(value) {
+                      return 'R$ ' + value.toFixed(0);
+                    }
+                  }
+                }
+              }
+            }
+          });
+          
+          // Esconder loading
+          document.getElementById('loading').style.display = 'none';
+          
+          // Mostrar a tab de resultado
+          mostrarTab('resultado');
+        }, 100);
+      }, 800); // Tempo simulado para processamento
+    }
+    
+    // Função para imprimir o orçamento
+    function imprimirOrcamento() {
+      window.print();
+    }
+    
+    // Função para limpar o formulário
+    function limparFormulario() {
+      if (confirm('Tem certeza que deseja limpar todos os dados do formulário?')) {
+        // Resetar dados gerais
+        document.getElementById('nomeEvento').value = '';
+        document.getElementById('dataEvento').valueAsDate = new Date();
+        document.getElementById('duracao').value = '5';
+        
+        // Resetar convidados
+        document.getElementById('convidadosTotal').value = '100';
+        document.getElementById('convidadosAdultos').value = '80';
+        document.getElementById('convidadosAbstemios').value = '10';
+        document.getElementById('convidadosMenores').value = '10';
+        
+        // Resetar perfil de consumo
+        document.getElementById('perfilConsumo').value = 'medio';
+        document.getElementById('consumoPersonalizadoGroup').style.display = 'none';
+        document.getElementById('consumoPersonalizado').value = '5';
+        
+        // Limpar bebidas
+        estado.bebidas = [];
+        atualizarListaBebidas();
+        
+        // Resetar equipe
+        document.getElementById('qtdBarmans').value = '2';
+        document.getElementById('custoBarman').value = '300';
+        document.getElementById('qtdAuxiliares').value = '1';
+        document.getElementById('custoAuxiliar').value = '200';
+        
+        // Resetar estrutura
+        document.getElementById('custoTransporte').value = '150';
+        document.getElementById('custoGelo').value = '100';
+        document.getElementById('custoCopos').value = '200';
+        document.getElementById('custoDecoracao').value = '150';
+        document.getElementById('custoBalcao').value = '300';
+        document.getElementById('custoCooler').value = '150';
+        document.getElementById('custoUtensilio').value = '100';
+        document.getElementById('custoExtra').value = '0';
+        
+        // Resetar resultado
+        document.getElementById('resultado').innerHTML = '<h3>Preencha todos os dados para ver os resultados</h3>';
+        
+        // Voltar para a primeira tab
+        mostrarTab('geral');
+        
+        // Esconder alerta
+        document.getElementById('alert').style.display = 'none';
+      }
+    }
+  </script>
+</body>
+</html>
